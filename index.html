@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>music player</title>
+    <!-- <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   <link rel="stylesheet" href="css/style.css">
+   <link rel="shortcut icon" href="#">
+</head>
+<body>
+    <div class="main_div">
+        <div class="music_container">
+            <h2 id="title">Tum Prem Ho</h2>
+            <h3 id="artist">Mohit Lalwani</h3>
+            <div class="img_container">
+                <img src="images/music1.jpg" alt="">
+            </div>
+            <audio src="music/music1.mp3
+            " ></audio>
+
+            <div class="progressbar_container" id="progress_container">
+                <div class="progress_duration_meter">
+                    <div id="current_time">0:00</div>
+                    <div id="duration">5:02</div>
+                </div>
+                <div class="progress_div" id="progress_div">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+
+            <div class="music_controls">
+            <i class="fa fa-backward" aria-hidden="true" id="prev" title="previous"></i>
+            <i class="fa fa-play main_button" aria-hidden="true" id="play" title="Play"></i>
+            <i class="fa fa-forward" aria-hidden="true" id="next" title="Next"></i>
+            </div>
+        </div>
+    </div>
+    <script>
+        const music=document.querySelector("audio")
+        const img=document.querySelector("img")
+        const play=document.getElementById("play")
+        const artist=document.getElementById("artist")
+        const title=document.getElementById("title")
+        const prev=document.getElementById("prev")
+        const next=document.getElementById("next")
+        let progress=document.getElementById("progress")
+        let total_duration=document.getElementById("duration")
+        let current_time=document.getElementById("current_time")
+        let progress_div=document.getElementById("progress_div")
+
+        const songs=[
+            {
+            name:"music1",
+            title:"Tum prem ho",
+            artist:"Mohit Lalwani",
+            image:"music1"
+        },
+            {
+            name:"music2",
+            title:"Shri Krishna Govinda",
+            artist:"Jubin Nautiyal",
+            image:"music3"
+
+        },
+            {
+            name:"music3",
+            title:"Hare Krishna",
+            artist:"Jubin Nautiyal",
+            image:"music2"
+        }
+
+    ]
+
+        let isPlaying = false;
+
+        const playMusic=()=>{
+            isplaying = true;
+            music.play();
+            play.classList.replace('fa-play','fa-pause')
+            img.classList.add("anime")
+        }
+        // const pauseMusic=()=>{
+        //     isPlaying = false;
+        //     music.pause();
+        //     play.classList.replace('fa-pause','fa-play')
+        //     img.classList.remove("anime")
+        // }
+        
+        // play.addEventListener("click",()=>{
+        //  isPlaying?pauseMusic():playMusic()
+        // })
+        function playPause(){
+            if(play.classList.contains("fa-play")){
+                music.play();
+                play.classList.replace('fa-play','fa-pause')
+                img.classList.add("anime")
+            }
+            else{
+                music.pause();
+                play.classList.replace('fa-pause','fa-play')
+                img.classList.remove("anime")
+
+            }
+        }
+    
+
+        const loadSongs=(songs)=>{
+            title.textContent=songs.title;
+            artist.textContent=songs.artist;
+            music.src=`music/${songs.name}.mp3`
+            img.src=`images/${songs.image}.jpg`
+
+        }
+
+      let songIndex=0
+
+        const nextSong=()=>{
+            songIndex=(songIndex+1)%songs.length;
+            loadSongs(songs[songIndex])
+            playMusic()
+        }
+        const prevSong=()=>{
+            songIndex=(songIndex-1+songs.length)%songs.length;
+            loadSongs(songs[songIndex])
+            playMusic()
+        }
+        play.addEventListener("click",()=>{
+            playPause()
+        })
+
+        music.addEventListener("timeupdate",(e)=>{
+            const { currentTime, duration} = e.srcElement
+           
+
+            let progress_time=(currentTime/duration)*100
+            progress.style.width=`${progress_time}%`
+
+            let min_duration=Math.floor(duration/60);
+            let sec_duration=Math.floor(duration%60);
+            if(sec_duration<10){
+                sec_duration=`0${sec_duration}`;
+            }
+            let tot_duration=`${min_duration}:${sec_duration}`
+
+            if(duration)
+            {total_duration.textContent=tot_duration}
+            
+            // current duration update
+
+            let min_currentTime=Math.floor(currentTime/60);
+            let sec_currentTime=Math.floor(currentTime%60);
+            
+            if(sec_currentTime<10){
+                sec_currentTime=`0${sec_currentTime}`;
+            }
+            let tot_currentTime=`${min_currentTime}:${sec_currentTime}`
+
+            current_time.textContent=tot_currentTime
+
+        })
+        // progress on click functionality
+
+        progress_div.addEventListener("click",(e)=>{
+            const {duration} = music
+            let move_progress=(e.offsetX/e.srcElement.clientWidth)*duration
+            music.currentTime = move_progress
+        })
+
+        // if music end call next song func
+        music.addEventListener("ended",nextSong)
+
+        next.addEventListener("click",nextSong)
+        prev.addEventListener("click",prevSong)
+
+        
+       
+    </script>
+</body>
+</html>
